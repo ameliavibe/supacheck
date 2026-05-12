@@ -5,7 +5,7 @@ import { findChainEnd } from '../lib/chain-walker.js';
 export interface R02Options {
   /**
    * Names of tables that must never be queried with select('*'). Defaults to
-   * an empty list (rule does nothing without a list — sensitive tables are
+   * an empty list (rule does nothing without a list; sensitive tables are
    * per-project knowledge the customer curates).
    */
   sensitiveTables?: string[];

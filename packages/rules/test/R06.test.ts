@@ -79,7 +79,7 @@ ALTER VIEW public.v SET (security_invoker = off);`,
 });
 
 describe('R06 multi-file scenarios (the squash-clobber case)', () => {
-  test('earlier file has SI on, later file CREATE OR REPLACE wipes it — fires', () => {
+  test('earlier file has SI on, later file CREATE OR REPLACE wipes it, fires', () => {
     const findings = R06.scanAll!([
       migration(
         '20260601000001_create.sql',
@@ -95,7 +95,7 @@ describe('R06 multi-file scenarios (the squash-clobber case)', () => {
     expect(findings[0]!.file).toBe('supabase/migrations/20260901000002_squash.sql');
   });
 
-  test('pg_dump style: emitted twice, second with SI — clean', () => {
+  test('pg_dump style: emitted twice, second with SI, clean', () => {
     const findings = R06.scanAll!([
       migration(
         '20260901000001_first-emission.sql',
@@ -119,7 +119,7 @@ describe('R06 multi-file scenarios (the squash-clobber case)', () => {
     expect(findings).toEqual([]);
   });
 
-  test('two views, one clean, one not — only the bad one fires', () => {
+  test('two views, one clean, one not; only the bad one fires', () => {
     const findings = R06.scanAll!([
       migration(
         '20260601000001_v.sql',
