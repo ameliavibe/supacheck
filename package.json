@@ -1,0 +1,21 @@
+{
+  "name": "supa-shield-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static analysis for Supabase + Next.js apps. Catches application-layer security footguns on every PR.",
+  "scripts": {
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

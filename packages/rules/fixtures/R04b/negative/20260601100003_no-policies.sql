@@ -1,0 +1,2 @@
+CREATE TABLE public.events (id uuid PRIMARY KEY);
+ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;

@@ -1,0 +1,32 @@
+{
+  "name": "supa-shield",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static analysis for Supabase + Next.js apps. Runs on every PR.",
+  "bin": {
+    "supa-shield": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@supa-shield/rules": "workspace:*",
+    "picocolors": "^1.1.1",
+    "picomatch": "^4.0.2",
+    "yaml": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^3.0.2",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  }
+}
