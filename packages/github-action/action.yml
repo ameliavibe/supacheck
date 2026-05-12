@@ -1,0 +1,65 @@
+name: supa-shield
+description: "Catch Supabase + Next.js application-layer security footguns at PR time."
+author: "ameliavibe"
+
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  config:
+    description: "Path to .supa-shield.yml (defaults to repo root lookup)."
+    required: false
+    default: ""
+  format:
+    description: "Output format: pretty | json | sarif | github-actions."
+    required: false
+    default: "github-actions"
+  baseline:
+    description: "Honor .supa-shield-baseline.json if present. Set to 'false' to ignore baseline."
+    required: false
+    default: "true"
+  sarif-file:
+    description: "If set, also write a SARIF report to this path. Upload it via github/codeql-action/upload-sarif to surface in Security tab."
+    required: false
+    default: ""
+  version:
+    description: "Pin supa-shield to a specific npm version (defaults to @latest)."
+    required: false
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Run supa-shield
+      shell: bash
+      env:
+        SUPA_SHIELD_CONFIG: ${{ inputs.config }}
+        SUPA_SHIELD_FORMAT: ${{ inputs.format }}
+        SUPA_SHIELD_BASELINE: ${{ inputs.baseline }}
+        SUPA_SHIELD_SARIF: ${{ inputs.sarif-file }}
+        SUPA_SHIELD_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        ARGS=("scan" "--format=$SUPA_SHIELD_FORMAT")
+        if [ -n "$SUPA_SHIELD_CONFIG" ]; then
+          ARGS+=("--config=$SUPA_SHIELD_CONFIG")
+        fi
+        if [ "$SUPA_SHIELD_BASELINE" != "true" ]; then
+          ARGS+=("--no-baseline")
+        fi
+        echo "Running: npx -y supa-shield@$SUPA_SHIELD_VERSION ${ARGS[*]}"
+        npx -y "supa-shield@$SUPA_SHIELD_VERSION" "${ARGS[@]}"
+
+    - name: Emit SARIF report
+      if: ${{ inputs.sarif-file != '' }}
+      shell: bash
+      env:
+        SUPA_SHIELD_SARIF: ${{ inputs.sarif-file }}
+        SUPA_SHIELD_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        # Second invocation so the SARIF report reflects the same scan results
+        # we just surfaced as PR annotations. Continue on error so a scan
+        # failure does not block the SARIF upload step.
+        npx -y "supa-shield@$SUPA_SHIELD_VERSION" scan --format=sarif --no-baseline > "$SUPA_SHIELD_SARIF" || true

@@ -1,0 +1,27 @@
+rules:
+  - id: supa-shield-r01-bare-getuser-in-route
+    languages:
+      - typescript
+      - tsx
+    severity: ERROR
+    message: |
+      Bare auth.getUser() (cookie-form) in an API route bypasses the
+      request-cached DAL. Use a wrapped requireAuth() helper so multiple
+      callers in one request share one round-trip. The bearer-token form
+      auth.getUser(token) is allowed.
+
+      For the full rule with allowlist support, run `supa-shield scan`.
+    metadata:
+      category: security
+      cwe: "CWE-285: Improper Authorization"
+      references:
+        - https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/R01.md
+    paths:
+      include:
+        - "**/app/api/**/route.ts"
+        - "**/app/api/**/route.tsx"
+      exclude:
+        - "**/*.test.ts"
+        - "**/*.test.tsx"
+        - "**/__tests__/**"
+    pattern: $X.auth.getUser()

@@ -1,0 +1,14 @@
+{
+  "name": "@supa-shield/github-action",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GitHub Action wrapper for the supa-shield CLI.",
+  "files": [
+    "action.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo 'github-action: no tests in v1 (smoke-tested via consuming repo)'",
+    "typecheck": "echo 'github-action: no TS to typecheck'"
+  }
+}

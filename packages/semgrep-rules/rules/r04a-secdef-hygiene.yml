@@ -1,0 +1,29 @@
+rules:
+  - id: supa-shield-r04a-secdef-missing-search-path
+    languages:
+      - generic
+    severity: ERROR
+    message: |
+      SECURITY DEFINER function without a SET search_path attribute is
+      vulnerable to search_path attacks. The attribute (placed before the
+      AS $$ body) is preserved by pg_dump during a squash; body-level
+      SETs are stripped.
+
+      Run `supa-shield scan` for the full hygiene check (also verifies
+      OWNER TO postgres and REVOKE EXECUTE ... FROM PUBLIC, anon,
+      authenticated).
+    metadata:
+      category: security
+      cwe: "CWE-426: Untrusted Search Path"
+      references:
+        - https://www.postgresql.org/docs/current/sql-createfunction.html
+        - https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/R04a.md
+    paths:
+      include:
+        - "**/migrations/**/*.sql"
+        - "**/supabase/migrations/**/*.sql"
+    patterns:
+      - pattern-regex: |
+          (?si)CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION[\s\S]{0,1000}?SECURITY\s+DEFINER[\s\S]{0,1000}?AS\s*\$\$
+      - pattern-not-regex: |
+          (?si)CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION[\s\S]{0,1000}?SET\s+search_path\s+TO[\s\S]{0,1000}?AS\s*\$\$

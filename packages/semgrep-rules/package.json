@@ -1,0 +1,13 @@
+{
+  "name": "@supa-shield/semgrep-rules",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Subset of supa-shield rules expressed as Semgrep YAML for Marketplace / SEO surface.",
+  "files": [
+    "rules"
+  ],
+  "scripts": {
+    "test": "echo 'semgrep-rules: no tests in v1 (run semgrep locally if you need to validate)'",
+    "typecheck": "echo 'semgrep-rules: no TS to typecheck'"
+  }
+}

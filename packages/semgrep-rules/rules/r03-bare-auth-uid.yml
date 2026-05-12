@@ -1,0 +1,29 @@
+rules:
+  - id: supa-shield-r03-bare-auth-uid-in-policy
+    languages:
+      - generic
+    severity: WARNING
+    message: |
+      Bare auth.uid() inside a CREATE POLICY / ALTER POLICY block forces
+      per-row evaluation in Postgres. Wrap as (select auth.uid()) so
+      Postgres caches the value once per query.
+
+      Note: this Semgrep version is approximate. The supa-shield CLI uses
+      a 64-character lookback to distinguish wrapped from unwrapped forms
+      precisely; the regex below catches the common shapes but may emit
+      false positives near complex policy bodies. Run `supa-shield scan`
+      for the authoritative check.
+    metadata:
+      category: performance
+      references:
+        - https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select
+        - https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/R03.md
+    paths:
+      include:
+        - "**/migrations/**/*.sql"
+        - "**/supabase/migrations/**/*.sql"
+    patterns:
+      - pattern-regex: |
+          (?si)(?:CREATE|ALTER)\s+POLICY[\s\S]{0,2000}?auth\.uid\(\)
+      - pattern-not-regex: |
+          (?si)(?:CREATE|ALTER)\s+POLICY[\s\S]{0,2000}?\(\s*select\s+auth\.uid\(\)\s*\)
