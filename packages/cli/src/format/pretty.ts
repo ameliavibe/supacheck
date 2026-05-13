@@ -1,5 +1,5 @@
 import pc from 'picocolors';
-import type { Finding } from '@supa-shield/rules';
+import type { Finding } from '@supacheck/rules';
 
 const SEVERITY_COLOR: Record<string, (s: string) => string> = {
   critical: (s) => pc.bold(pc.red(s)),
@@ -9,7 +9,7 @@ const SEVERITY_COLOR: Record<string, (s: string) => string> = {
 };
 
 export function formatPretty(findings: Finding[]): string {
-  if (findings.length === 0) return pc.green('supa-shield: no findings.');
+  if (findings.length === 0) return pc.green('supacheck: no findings.');
 
   const byFile = new Map<string, Finding[]>();
   for (const f of findings) {

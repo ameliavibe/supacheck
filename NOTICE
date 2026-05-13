@@ -1,4 +1,4 @@
-supa-shield
+supacheck
 Copyright 2026 Mauricio Idarraga
 
 Licensed under the Apache License, Version 2.0.
@@ -12,8 +12,8 @@ The decision to ship a deterministic CI-time linter for Supabase + Next.js apps
 was informed by deepsec (https://github.com/vercel-labs/deepsec), Apache License
 2.0, Copyright Vercel Labs.
 
-supa-shield is a complementary tool. deepsec runs as an on-demand LLM-driven
-audit; supa-shield runs as a deterministic CI gate on every PR. No code is
+supacheck is a complementary tool. deepsec runs as an on-demand LLM-driven
+audit; supacheck runs as a deterministic CI gate on every PR. No code is
 copied from deepsec; this project ships independent implementations of distinct
 rules that deepsec's architecture either skips (migrations) or does not cover
 (Supabase-specific patterns).

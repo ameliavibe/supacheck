@@ -1,4 +1,4 @@
-name: supa-shield
+name: supacheck
 description: "Catch Supabase + Next.js application-layer security footguns at PR time."
 author: "ameliavibe"
 
@@ -8,7 +8,7 @@ branding:
 
 inputs:
   config:
-    description: "Path to .supa-shield.yml (defaults to repo root lookup)."
+    description: "Path to .supacheck.yml (defaults to repo root lookup)."
     required: false
     default: ""
   format:
@@ -16,7 +16,7 @@ inputs:
     required: false
     default: "github-actions"
   baseline:
-    description: "Honor .supa-shield-baseline.json if present. Set to 'false' to ignore baseline."
+    description: "Honor .supacheck-baseline.json if present. Set to 'false' to ignore baseline."
     required: false
     default: "true"
   sarif-file:
@@ -24,14 +24,14 @@ inputs:
     required: false
     default: ""
   version:
-    description: "Pin supa-shield to a specific npm version (defaults to @latest)."
+    description: "Pin supacheck to a specific npm version (defaults to @latest)."
     required: false
     default: "latest"
 
 runs:
   using: composite
   steps:
-    - name: Run supa-shield
+    - name: Run supacheck
       shell: bash
       env:
         SUPA_SHIELD_CONFIG: ${{ inputs.config }}
@@ -48,8 +48,8 @@ runs:
         if [ "$SUPA_SHIELD_BASELINE" != "true" ]; then
           ARGS+=("--no-baseline")
         fi
-        echo "Running: npx -y supa-shield@$SUPA_SHIELD_VERSION ${ARGS[*]}"
-        npx -y "supa-shield@$SUPA_SHIELD_VERSION" "${ARGS[@]}"
+        echo "Running: npx -y supacheck@$SUPA_SHIELD_VERSION ${ARGS[*]}"
+        npx -y "supacheck@$SUPA_SHIELD_VERSION" "${ARGS[@]}"
 
     - name: Emit SARIF report
       if: ${{ inputs.sarif-file != '' }}
@@ -62,4 +62,4 @@ runs:
         # Second invocation so the SARIF report reflects the same scan results
         # we just surfaced as PR annotations. Continue on error so a scan
         # failure does not block the SARIF upload step.
-        npx -y "supa-shield@$SUPA_SHIELD_VERSION" scan --format=sarif --no-baseline > "$SUPA_SHIELD_SARIF" || true
+        npx -y "supacheck@$SUPA_SHIELD_VERSION" scan --format=sarif --no-baseline > "$SUPA_SHIELD_SARIF" || true

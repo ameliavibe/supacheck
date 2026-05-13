@@ -35,7 +35,7 @@ describe.skipIf(!ameliaAvailable)('CLI end-to-end smoke vs. Amelia', () => {
       });
       // eslint-disable-next-line no-console
       console.log(
-        `supa-shield smoke vs. Amelia: ${result.findings.length} finding(s) across the repo.`,
+        `supacheck smoke vs. Amelia: ${result.findings.length} finding(s) across the repo.`,
       );
       // Validate finding shape if any landed
       for (const f of result.findings.slice(0, 5)) {

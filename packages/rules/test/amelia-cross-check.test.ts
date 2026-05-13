@@ -6,7 +6,7 @@
  * migrations directory with the same baseline.
  *
  * Skipped automatically when the AMELIA_REPO env var is unset (so CI on the
- * supa-shield repo does not require Amelia to be checked out alongside).
+ * supacheck repo does not require Amelia to be checked out alongside).
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -39,7 +39,7 @@ describe.skipIf(!ameliaAvailable)('R03 vs. real Amelia migrations', () => {
       findings.push(...rule.scan({ path: file, contents }));
     }
     // Amelia's own audit:static gate enforces zero violations after the squash
-    // baseline. If this fails, either supa-shield's port has a false positive
+    // baseline. If this fails, either supacheck's port has a false positive
     // or Amelia regressed.
     if (findings.length > 0) {
       const summary = findings

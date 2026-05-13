@@ -1,4 +1,4 @@
-import type { Finding } from '@supa-shield/rules';
+import type { Finding } from '@supacheck/rules';
 
 /**
  * Emits SARIF 2.1.0 so customers can upload to GitHub Code Scanning. SARIF
@@ -10,8 +10,8 @@ export function formatSarif(findings: Finding[], toolVersion: string): string {
   const rules = ruleIds.map((id) => ({
     id,
     name: id,
-    shortDescription: { text: `supa-shield ${id}` },
-    helpUri: `https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/${id}.md`,
+    shortDescription: { text: `supacheck ${id}` },
+    helpUri: `https://github.com/ameliavibe/supacheck/blob/main/docs/rules/${id}.md`,
   }));
 
   const results = findings.map((f) => ({
@@ -39,9 +39,9 @@ export function formatSarif(findings: Finding[], toolVersion: string): string {
         {
           tool: {
             driver: {
-              name: 'supa-shield',
+              name: 'supacheck',
               version: toolVersion,
-              informationUri: 'https://github.com/ameliavibe/supa-shield',
+              informationUri: 'https://github.com/ameliavibe/supacheck',
               rules,
             },
           },

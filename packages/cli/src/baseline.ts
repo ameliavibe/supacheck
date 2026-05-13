@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import type { Finding } from '@supa-shield/rules';
+import type { Finding } from '@supacheck/rules';
 
 export interface BaselineEntry {
   ruleId: string;

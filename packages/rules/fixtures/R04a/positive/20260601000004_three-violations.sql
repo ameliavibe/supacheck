@@ -1,4 +1,4 @@
--- SECDEF function missing all three attributes — produces 3 findings.
+-- SECDEF function missing all three attributes; produces 3 findings.
 
 CREATE OR REPLACE FUNCTION public.bare_secdef(p_id uuid)
   RETURNS void

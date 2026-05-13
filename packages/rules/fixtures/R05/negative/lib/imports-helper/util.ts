@@ -1,4 +1,4 @@
-import { safeFetch } from '@supa-shield/safe-fetch';
+import { safeFetch } from '@supacheck/safe-fetch';
 
 export async function load(url: string) {
   // Helper is imported at top, this whole file is exempt by design.

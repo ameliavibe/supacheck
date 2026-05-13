@@ -1,4 +1,4 @@
-import type { Rule } from '@supa-shield/rules';
+import type { Rule } from '@supacheck/rules';
 import {
   createR01,
   createR02,
@@ -8,14 +8,14 @@ import {
   createR05,
   createR06,
   createR07,
-} from '@supa-shield/rules';
-import type { SupaShieldConfig } from './config.js';
+} from '@supacheck/rules';
+import type { SupacheckConfig } from './config.js';
 
 /**
  * Builds the list of enabled rules from the loaded config. As new rules land,
  * append them here and wire their per-rule config.
  */
-export function buildRules(config: SupaShieldConfig): Rule[] {
+export function buildRules(config: SupacheckConfig): Rule[] {
   const rules: Rule[] = [];
 
   if (config.rules.R01?.enabled !== false) {

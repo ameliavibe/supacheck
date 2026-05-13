@@ -1,6 +1,6 @@
-# @supa-shield/semgrep-rules
+# @supacheck/semgrep-rules
 
-A subset of supa-shield's rules expressed as Semgrep YAML, for users who want a
+A subset of supacheck's rules expressed as Semgrep YAML, for users who want a
 quick Semgrep rulepack to drop into an existing Semgrep CI. **The CLI is the
 canonical implementation.** This Semgrep pack is intentionally approximate, for
 three reasons:
@@ -23,9 +23,9 @@ For the full 7-rule rulepack with deterministic fixes, baseline mode, and
 SARIF output, use the CLI:
 
 ```
-npm install -g supa-shield
-supa-shield init
-supa-shield scan
+npm install -g supacheck
+supacheck init
+supacheck scan
 ```
 
 ## Running this pack
@@ -37,7 +37,7 @@ semgrep --config packages/semgrep-rules/rules
 Or, once published, via Semgrep's registry namespace:
 
 ```
-semgrep --config p/supa-shield
+semgrep --config p/supacheck
 ```
 
 ## License

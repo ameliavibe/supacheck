@@ -1,4 +1,4 @@
-# supa-shield
+# supacheck
 
 Static analysis for Supabase + Next.js apps. Catches the application-layer security
 footguns that live-DB scanners miss and that audit-time LLM tools skip.
@@ -73,7 +73,7 @@ to a follower at the wrong moment, every row in the underlying table would be
 readable across users. This is the same class of bug that ships as
 "cross-user data leak" headlines.
 
-supa-shield catches every known way this happens, before the regenerated
+supacheck catches every known way this happens, before the regenerated
 baseline lands in production.
 
 ---
@@ -101,13 +101,13 @@ your hand-written security posture during the squash workflow.
 
 | Tool | Coverage | When it runs | Cost per run |
 |------|----------|--------------|--------------|
-| **supa-shield** | Supabase + Next.js app layer, migrations, squash defenses | Every PR | Free OSS |
+| **supacheck** | Supabase + Next.js app layer, migrations, squash defenses | Every PR | Free OSS |
 | deepsec (vercel-labs) | Next.js auth, generic SSRF, multi-framework, LLM-driven | On demand, audit cadence | $1,000+ per scan in LLM costs |
 | Supabase Splinter | DB-only: RLS-disabled tables, exposed columns, definer views | Live DB scan | Free, built-in |
 | Supabase Advisors | DB-only: similar surface to Splinter | Live DB scan | Free, dashboard |
 | Semgrep / Snyk | Generic SAST. No Supabase rulepack ships. | Every PR | Free OSS / paid per contributor |
 
-deepsec catches missing auth on Next.js routes. supa-shield catches the
+deepsec catches missing auth on Next.js routes. supacheck catches the
 migration-time and Supabase-specific footguns that deepsec explicitly skips
 (deepsec's `if (/migrations/i.test(filePath)) return []` line is the wedge).
 Run both.
@@ -118,10 +118,10 @@ Run both.
 
 Coming soon. v0.1 ships as:
 
-- `supa-shield` CLI on npm
-- `@supa-shield/safe-fetch` reference SSRF helper on npm
-- `supa-shield-action` GitHub Action
-- `@supa-shield/semgrep-rules` rulepack (subset, for Semgrep Marketplace)
+- `supacheck` CLI on npm
+- `@supacheck/safe-fetch` reference SSRF helper on npm
+- `supacheck-action` GitHub Action
+- `@supacheck/semgrep-rules` rulepack (subset, for Semgrep Marketplace)
 
 ---
 
@@ -134,7 +134,7 @@ Supabase community ships incidents in the headlines roughly monthly. The
 delta between "we have a CI gate that catches this" and "we have an audit
 that catches this once a quarter" is the production breach window.
 
-supa-shield is the deterministic, fast, free CI gate. It pairs with deepsec
+supacheck is the deterministic, fast, free CI gate. It pairs with deepsec
 for quarterly audit coverage and with Splinter for live-DB hygiene. It is
 not a substitute for either.
 

@@ -12,7 +12,7 @@ export interface R05Options {
   /**
    * Additional helper import specifiers that, when imported by a file, mark
    * it as "covered" and exempt from the rule. Defaults already match the
-   * @supa-shield/safe-fetch package and any local security/ssrf module
+   * @supacheck/safe-fetch package and any local security/ssrf module
    * imported via relative path.
    */
   helperImports?: string[];
@@ -22,7 +22,7 @@ const FORBIDDEN = /(?<![\w.])fetch\s*\(/g;
 const SSRF_SAFE_ANNOTATION = /\/\/\s*ssrf-safe:/;
 
 const DEFAULT_HELPER_IMPORTS = [
-  '@supa-shield/safe-fetch',
+  '@supacheck/safe-fetch',
 ];
 
 const SSRF_HELPER_RE_LOCAL = /from\s+['"]\.\.?\/(?:[\w-]+\/)*security\/ssrf['"]/;
@@ -36,7 +36,7 @@ function isInScope(filePath: string, allowlist: string[]): boolean {
   if (norm.endsWith('.d.ts')) return false;
   // The SSRF helper itself is not in scope (it owns the call).
   if (norm.endsWith('/security/ssrf.ts')) return false;
-  if (norm.endsWith('@supa-shield/safe-fetch/src/index.ts')) return false;
+  if (norm.endsWith('@supacheck/safe-fetch/src/index.ts')) return false;
   if (!norm.endsWith('.ts') && !norm.endsWith('.tsx')) return false;
   const underLib = norm === 'lib' || norm.startsWith('lib/') || norm.includes('/lib/');
   const underApi = norm === 'app/api' || norm.startsWith('app/api/') || norm.includes('/app/api/');
@@ -88,7 +88,7 @@ export function createR05(options: R05Options = {}): Rule {
           column,
           message:
             'Server-side fetch() may issue requests to attacker-controlled URLs (SSRF). ' +
-            'Use safeFetch() from @supa-shield/safe-fetch or import a local security/ssrf helper. ' +
+            'Use safeFetch() from @supacheck/safe-fetch or import a local security/ssrf helper. ' +
             'For known-safe constant URLs, add `// ssrf-safe: <reason>` on the same line or the line above.',
           range: [m.index, m.index + m[0].length],
         });

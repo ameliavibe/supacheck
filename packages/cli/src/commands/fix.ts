@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { Finding, FixPatch, ScannedFile } from '@supa-shield/rules';
-import { runRules } from '@supa-shield/rules';
+import type { Finding, FixPatch, ScannedFile } from '@supacheck/rules';
+import { runRules } from '@supacheck/rules';
 import { loadConfig } from '../config.js';
 import { buildRules } from '../registry.js';
 import { walk } from '../walk.js';

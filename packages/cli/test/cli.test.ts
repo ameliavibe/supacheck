@@ -8,7 +8,7 @@ import { runBaseline } from '../src/commands/baseline.js';
 import { runFix } from '../src/commands/fix.js';
 
 function withTempProject(seed: Record<string, string>, fn: (cwd: string) => void): void {
-  const cwd = mkdtempSync(join(tmpdir(), 'supa-shield-test-'));
+  const cwd = mkdtempSync(join(tmpdir(), 'supacheck-test-'));
   try {
     for (const [path, contents] of Object.entries(seed)) {
       const full = join(cwd, path);
@@ -66,26 +66,26 @@ describe('CLI: scan command', () => {
 });
 
 describe('CLI: init command', () => {
-  test('writes .supa-shield.yml when none exists', () => {
+  test('writes .supacheck.yml when none exists', () => {
     withTempProject({}, (cwd) => {
       const result = runInit({ cwd, force: false });
       expect(result.written).toBe(true);
-      expect(existsSync(join(cwd, '.supa-shield.yml'))).toBe(true);
-      const content = readFileSync(join(cwd, '.supa-shield.yml'), 'utf8');
+      expect(existsSync(join(cwd, '.supacheck.yml'))).toBe(true);
+      const content = readFileSync(join(cwd, '.supacheck.yml'), 'utf8');
       expect(content).toContain('version: 1');
       expect(content).toContain('R03:');
     });
   });
 
   test('refuses to overwrite without --force', () => {
-    withTempProject({ '.supa-shield.yml': 'version: 1\n' }, (cwd) => {
+    withTempProject({ '.supacheck.yml': 'version: 1\n' }, (cwd) => {
       const result = runInit({ cwd, force: false });
       expect(result.written).toBe(false);
     });
   });
 
   test('overwrites with --force', () => {
-    withTempProject({ '.supa-shield.yml': 'version: 1\n' }, (cwd) => {
+    withTempProject({ '.supacheck.yml': 'version: 1\n' }, (cwd) => {
       const result = runInit({ cwd, force: true });
       expect(result.written).toBe(true);
     });
@@ -99,7 +99,7 @@ describe('CLI: baseline command', () => {
       (cwd) => {
         const baseline = runBaseline({ cwd, configPath: null });
         expect(baseline.count).toBe(1);
-        expect(existsSync(join(cwd, '.supa-shield-baseline.json'))).toBe(true);
+        expect(existsSync(join(cwd, '.supacheck-baseline.json'))).toBe(true);
 
         const scan = runScan({
           cwd,

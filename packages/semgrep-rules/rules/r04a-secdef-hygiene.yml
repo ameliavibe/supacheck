@@ -1,5 +1,5 @@
 rules:
-  - id: supa-shield-r04a-secdef-missing-search-path
+  - id: supacheck-r04a-secdef-missing-search-path
     languages:
       - generic
     severity: ERROR
@@ -9,7 +9,7 @@ rules:
       AS $$ body) is preserved by pg_dump during a squash; body-level
       SETs are stripped.
 
-      Run `supa-shield scan` for the full hygiene check (also verifies
+      Run `supacheck scan` for the full hygiene check (also verifies
       OWNER TO postgres and REVOKE EXECUTE ... FROM PUBLIC, anon,
       authenticated).
     metadata:
@@ -17,7 +17,7 @@ rules:
       cwe: "CWE-426: Untrusted Search Path"
       references:
         - https://www.postgresql.org/docs/current/sql-createfunction.html
-        - https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/R04a.md
+        - https://github.com/ameliavibe/supacheck/blob/main/docs/rules/R04a.md
     paths:
       include:
         - "**/migrations/**/*.sql"

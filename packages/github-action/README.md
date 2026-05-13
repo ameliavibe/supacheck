@@ -1,14 +1,14 @@
-# supa-shield GitHub Action
+# supacheck GitHub Action
 
-Runs supa-shield against every pull request and emits findings as PR
+Runs supacheck against every pull request and emits findings as PR
 annotations in the diff view. Optional SARIF output for GitHub Code Scanning.
 
 ## Quick start
 
-Drop this into `.github/workflows/supa-shield.yml`:
+Drop this into `.github/workflows/supacheck.yml`:
 
 ```yaml
-name: supa-shield
+name: supacheck
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: ameliavibe/supa-shield/packages/github-action@v1
+      - uses: ameliavibe/supacheck/packages/github-action@v1
 ```
 
 Findings show up directly on changed lines in the PR diff view.
@@ -33,28 +33,28 @@ Findings show up directly on changed lines in the PR diff view.
 To also push results into the GitHub Security tab:
 
 ```yaml
-      - uses: ameliavibe/supa-shield/packages/github-action@v1
+      - uses: ameliavibe/supacheck/packages/github-action@v1
         with:
-          sarif-file: supa-shield.sarif
+          sarif-file: supacheck.sarif
       - uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: supa-shield.sarif
+          sarif_file: supacheck.sarif
 ```
 
 ## Inputs
 
 | Name | Default | Description |
 |------|---------|-------------|
-| `config` | (auto-discover) | Path to `.supa-shield.yml`. |
+| `config` | (auto-discover) | Path to `.supacheck.yml`. |
 | `format` | `github-actions` | Output format. |
-| `baseline` | `true` | Honor `.supa-shield-baseline.json` if present. |
+| `baseline` | `true` | Honor `.supacheck-baseline.json` if present. |
 | `sarif-file` | (none) | Path to write SARIF report. Combine with `github/codeql-action/upload-sarif`. |
-| `version` | `latest` | npm version of supa-shield to invoke. Pin for reproducible CI. |
+| `version` | `latest` | npm version of supacheck to invoke. Pin for reproducible CI. |
 
 ## Behavior
 
-- Runs `npx supa-shield@<version> scan` against the checked-out tree.
+- Runs `npx supacheck@<version> scan` against the checked-out tree.
 - Emits one annotation per finding (GitHub renders them on the changed line).
 - Exits non-zero if any *new* finding is reported (existing findings recorded
   in the baseline file do not fail the build).

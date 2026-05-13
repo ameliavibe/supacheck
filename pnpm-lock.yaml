@@ -17,7 +17,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@supa-shield/rules':
+      '@supacheck/rules':
         specifier: workspace:*
         version: link:../rules
       picocolors:

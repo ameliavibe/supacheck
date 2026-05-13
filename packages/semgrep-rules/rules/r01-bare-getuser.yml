@@ -1,5 +1,5 @@
 rules:
-  - id: supa-shield-r01-bare-getuser-in-route
+  - id: supacheck-r01-bare-getuser-in-route
     languages:
       - typescript
       - tsx
@@ -10,12 +10,12 @@ rules:
       callers in one request share one round-trip. The bearer-token form
       auth.getUser(token) is allowed.
 
-      For the full rule with allowlist support, run `supa-shield scan`.
+      For the full rule with allowlist support, run `supacheck scan`.
     metadata:
       category: security
       cwe: "CWE-285: Improper Authorization"
       references:
-        - https://github.com/ameliavibe/supa-shield/blob/main/docs/rules/R01.md
+        - https://github.com/ameliavibe/supacheck/blob/main/docs/rules/R01.md
     paths:
       include:
         - "**/app/api/**/route.ts"

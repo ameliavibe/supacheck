@@ -1,4 +1,4 @@
-import type { Finding } from '@supa-shield/rules';
+import type { Finding } from '@supacheck/rules';
 import { formatPretty } from './pretty.js';
 import { formatJson } from './json.js';
 import { formatGithubActions } from './github-actions.js';

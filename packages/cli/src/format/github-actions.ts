@@ -1,4 +1,4 @@
-import type { Finding } from '@supa-shield/rules';
+import type { Finding } from '@supacheck/rules';
 
 /**
  * Emits GitHub Actions workflow commands so violations show up as PR
@@ -13,7 +13,7 @@ export function formatGithubActions(findings: Finding[]): string {
       `line=${f.line}`,
     ];
     if (f.column !== undefined) props.push(`col=${f.column}`);
-    props.push(`title=${escapeProp(`supa-shield ${f.ruleId}`)}`);
+    props.push(`title=${escapeProp(`supacheck ${f.ruleId}`)}`);
     lines.push(`::error ${props.join(',')}::${escapeMessage(f.message)}`);
   }
   return lines.join('\n');

@@ -1,5 +1,5 @@
 /**
- * @supa-shield/safe-fetch
+ * @supacheck/safe-fetch
  *
  * Drop-in replacement for the global `fetch()` that:
  *
