@@ -29,9 +29,12 @@ const ameliaAvailable = existsSync(MIGRATIONS_DIR);
 describe.skipIf(!ameliaAvailable)('R03 vs. real Amelia migrations', () => {
   const rule = createR03({ migrationsBaselineTimestamp: AMELIA_BASELINE });
 
-  const sqlFiles = readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort();
+  // A skipped describe still runs its body to collect tests.
+  const sqlFiles = ameliaAvailable
+    ? readdirSync(MIGRATIONS_DIR)
+        .filter((f) => f.endsWith('.sql'))
+        .sort()
+    : [];
 
   test('Amelia migrations directory contains at least the squash baseline', () => {
     expect(sqlFiles.length).toBeGreaterThan(0);
