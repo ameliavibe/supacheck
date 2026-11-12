@@ -185,9 +185,10 @@ supacheck ships as a small monorepo of focused packages:
 **Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). Not yet published to npm, so `npx supacheck` and the GitHub Action above do not work yet. Until then, run it from a clone:
 
 ```bash
-git clone https://github.com/ameliavibe/supacheck && cd supacheck && pnpm install
+git clone https://github.com/ameliavibe/supacheck && cd supacheck
+pnpm install && pnpm build
 cd /path/to/your/project
-/path/to/supacheck/packages/cli/node_modules/.bin/tsx /path/to/supacheck/packages/cli/src/index.ts scan
+node /path/to/supacheck/packages/cli/dist/index.js scan
 ```
 
 v0.1 ships to npm with the squash-clobbers blog post. Star the repo or watch [Releases](https://github.com/ameliavibe/supacheck/releases) to get the launch ping.

@@ -29,3 +29,10 @@ jobs:
       - name: test
         run: pnpm test
         if: always()
+
+      - name: build
+        run: pnpm build
+        if: always()
+
+      - name: built CLI runs
+        run: node packages/cli/dist/index.js --version
