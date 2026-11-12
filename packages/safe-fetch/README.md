@@ -73,8 +73,9 @@ Numeric spellings such as `http://2130706433/`, `http://0x7f.0.0.1/` and `http:/
 `fetch(url, { redirect: 'follow' })` validates nothing after the first URL: a public address can answer `302 Location: http://127.0.0.1:8080/`. `safeFetch` always sends with `redirect: 'manual'`, validates the `Location` it gets back, and only then follows it.
 
 - At most 5 hops by default. Change it with the third argument: `safeFetch(url, init, { maxRedirects: 2 })`. Pass `0` to refuse any redirect.
-- `301`, `302` and `303` switch the method to `GET` and drop the body. `307` and `308` keep both.
+- `301`, `302` and `303` switch the method to `GET` and drop the body and its `Content-*` headers. `307` and `308` keep all three.
 - A `3xx` response with no `Location` header, and a `304`, are returned as they are.
+- When a redirect goes to a different origin (another host, port or scheme), the `Authorization`, `Cookie` and `Proxy-Authorization` headers are removed, as `fetch` itself does. They are not added back if a later hop returns to the first origin.
 
 ## API
 
@@ -118,7 +119,7 @@ Branch on `code`. The `message` is safe to log; decide for yourself how much of 
 ## What it does not do
 
 - **DNS rebinding.** The hostname is resolved once to validate it, and `fetch` resolves it again to connect. A resolver under an attacker's control can answer with a public address the first time and a private one the second. Closing that gap needs the connection pinned to the validated address with a custom dispatcher, which this package does not do. If that is in your threat model, also block egress to private ranges at the network layer.
-- **Headers on redirects.** The headers you pass in `init` are sent on every hop, including to a different origin. Do not pass `Authorization`, cookies or API keys for a URL you do not control.
+- **Custom credential headers.** `Authorization`, `Cookie` and `Proxy-Authorization` are dropped when a redirect leaves the origin (see Redirects). A key in a header of your own, such as `X-Api-Key`, is not recognized as a credential and is sent on every hop. Do not send one to a URL you do not control.
 - **Allowlists.** There is no option to permit a specific private address. If your server legitimately calls an internal service, call it with plain `fetch` from code that does not take the URL from a user.
 - **Relative URLs.** The URL must be absolute. A path such as `/api/health` is rejected as `INVALID_URL`.
 - **Other runtimes.** It uses `node:dns`, so it runs on Node, not in the browser or on edge runtimes without Node compatibility.

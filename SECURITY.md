@@ -14,7 +14,7 @@ You should hear back within a week. If the report is confirmed, a fix is release
 
 ## What counts
 
-**`@supacheck/safe-fetch`.** Any way to make `safeFetch` or `assertSafeFetchUrl` send a request to, or approve, a private, loopback, link-local or metadata address is a vulnerability. The limits the package documents are not: DNS rebinding and headers being forwarded on redirects are described in its README.
+**`@supacheck/safe-fetch`.** Any way to make `safeFetch` or `assertSafeFetchUrl` send a request to, or approve, a private, loopback, link-local or metadata address is a vulnerability. The limits its README documents are not, such as DNS rebinding and credentials carried in headers of your own naming.
 
 **`supacheck` (the CLI and rules).** A vulnerability is something that harms the person running it: code execution or file writes caused by a crafted repository, config file or migration, or output that leaks file contents it should not. The CLI reads your files and writes only its own config and baseline files, a report file when you ask for one, and, with `fix`, the files it reports.
 

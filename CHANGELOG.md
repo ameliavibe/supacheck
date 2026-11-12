@@ -4,7 +4,9 @@ Notable changes to `supacheck` and `@supacheck/safe-fetch`. Versions follow [sem
 
 ## @supacheck/safe-fetch 0.1.1 (2026-11-12)
 
-- Added a README. No code changes.
+- **Security:** `safeFetch` no longer forwards `Authorization`, `Cookie` and `Proxy-Authorization` when a redirect leaves the origin. In 0.1.0 every header was re-sent on every hop, so a URL that redirected elsewhere received the caller's credentials.
+- A `301`, `302` or `303` now also drops the request's `Content-*` headers along with the body.
+- Added a README and tests for redirect handling.
 
 ## 0.1.0 (2026-11-12)
 

@@ -120,6 +120,16 @@ export async function assertSafeFetchUrl(rawUrl: string): Promise<URL> {
 
 const DEFAULT_MAX_REDIRECTS = 5;
 
+// What `fetch` itself drops when a redirect leaves the origin or stops sending a body.
+const CREDENTIAL_HEADERS = ['authorization', 'cookie', 'proxy-authorization'];
+const BODY_HEADERS = [
+  'content-encoding',
+  'content-language',
+  'content-length',
+  'content-location',
+  'content-type',
+];
+
 export interface SafeFetchOptions {
   /** Cap on redirect chain length (default 5). */
   maxRedirects?: number;
@@ -131,12 +141,13 @@ export async function safeFetch(
   opts: SafeFetchOptions = {},
 ): Promise<Response> {
   const maxRedirects = opts.maxRedirects ?? DEFAULT_MAX_REDIRECTS;
-  let current = (await assertSafeFetchUrl(rawUrl)).toString();
+  let current = await assertSafeFetchUrl(rawUrl);
   let method = (init.method ?? 'GET').toUpperCase();
   let body = init.body;
+  const headers = new Headers(init.headers);
 
   for (let hop = 0; hop <= maxRedirects; hop++) {
-    const res = await fetch(current, { ...init, method, body, redirect: 'manual' });
+    const res = await fetch(current, { ...init, method, body, headers, redirect: 'manual' });
     if (res.status < 300 || res.status >= 400 || res.status === 304) return res;
     const location = res.headers.get('location');
     if (!location) return res;
@@ -147,14 +158,19 @@ export async function safeFetch(
         `Exceeded maximum ${maxRedirects} redirects`,
       );
     }
-    const next = new URL(location, current);
-    await assertSafeFetchUrl(next.toString());
+    const next = await assertSafeFetchUrl(new URL(location, current).toString());
 
+    // Credentials were given for the origin the caller named, not for wherever
+    // it redirects. Once dropped they stay dropped, even if a later hop returns.
+    if (next.origin !== current.origin) {
+      for (const name of CREDENTIAL_HEADERS) headers.delete(name);
+    }
     if (res.status === 301 || res.status === 302 || res.status === 303) {
       method = 'GET';
       body = undefined;
+      for (const name of BODY_HEADERS) headers.delete(name);
     }
-    current = next.toString();
+    current = next;
   }
 
   throw new SsrfBlockedError('TOO_MANY_REDIRECTS', `Exceeded maximum ${maxRedirects} redirects`);
