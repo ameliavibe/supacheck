@@ -56,5 +56,10 @@ Lessons from fixing the same parser in the source app:
   grants EXECUTE to PUBLIC on every new function, so a deny-by-default rule for
   all functions is a candidate.
 - The Semgrep pack covers only R01, R03 and R04a.
-- The GitHub Action's documented `@v1` ref needs a `v1` tag.
-- `@supacheck/safe-fetch` has no README of its own.
+- `safeFetch` re-sends the caller's headers on every redirect hop, including to
+  another origin. Native `fetch` drops `Authorization` on a cross-origin
+  redirect; do the same, and drop `Cookie` too.
+- No rule flags `pg_temp` listed FIRST in a function's `search_path`, which
+  gives no protection: the temp schema is still searched before `public`.
+- `ALTER FUNCTION … SECURITY DEFINER` on a function created as INVOKER, and
+  `ALTER FUNCTION … SET SCHEMA`, are not replayed.
