@@ -1,22 +1,34 @@
-import type { Finding } from '@supacheck/rules';
+import type { Finding, Rule, RuleSeverity } from '@supacheck/rules';
+
+const LEVEL: Record<RuleSeverity, 'error' | 'warning' | 'note'> = {
+  critical: 'error',
+  high: 'error',
+  medium: 'warning',
+  low: 'note',
+};
 
 /**
  * Emits SARIF 2.1.0 so customers can upload to GitHub Code Scanning. SARIF
  * lets the Security tab consume findings without our GitHub App installed.
  * Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
  */
-export function formatSarif(findings: Finding[], toolVersion: string): string {
+export function formatSarif(
+  findings: Finding[],
+  toolVersion: string,
+  ruleDefs: Rule[] = [],
+): string {
+  const defs = new Map(ruleDefs.map((r) => [r.id, r]));
   const ruleIds = Array.from(new Set(findings.map((f) => f.ruleId))).sort();
   const rules = ruleIds.map((id) => ({
     id,
-    name: id,
-    shortDescription: { text: `supacheck ${id}` },
-    helpUri: `https://github.com/ameliavibe/supacheck/blob/main/docs/rules/${id}.md`,
+    name: defs.get(id)?.slug ?? id,
+    shortDescription: { text: defs.get(id)?.name ?? `supacheck ${id}` },
+    helpUri: 'https://github.com/ameliavibe/supacheck#what-it-catches',
   }));
 
   const results = findings.map((f) => ({
     ruleId: f.ruleId,
-    level: 'error' as const,
+    level: LEVEL[defs.get(f.ruleId)?.severity ?? 'high'],
     message: { text: f.message },
     locations: [
       {

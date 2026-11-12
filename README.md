@@ -61,13 +61,17 @@ Run `npx supacheck fix` and the policy gets patched deterministically. No LLM, n
 | **R01** | Bare `auth.getUser()` in an API route (DAL cache-coherence) | | |
 | **R02** | `select('*')` on a sensitive table | | |
 | **R03** | Bare `auth.uid()` in an RLS policy (per-row perf) | yes | |
-| **R04a** | SECDEF function missing `search_path` / `OWNER` / `REVOKE` | | yes |
+| **R04a** | SECDEF function missing `search_path` (or one without `pg_temp`) / `OWNER` / `REVOKE` | | yes |
 | **R04b** | Service-role policy without explicit `TO service_role` | | yes |
 | **R05** | Server-side `fetch()` outside an SSRF-safe helper | | |
 | **R06** | View without `security_invoker = on` (state machine over migrations) | | yes |
 | **R07** | Locked-down SECDEF with PUBLIC-only REVOKE | | yes |
+| **R08** | RLS policy with no `TO` clause or `TO public`, which applies to `anon` | | |
+| **R09** | SECDEF function that `anon` can still execute | | yes |
 
-Four of the seven defend against `pg_dump` rewriting your security posture during a Supabase squash. The other three catch application-layer footguns that other Supabase security tools miss.
+Five of the ten defend against `pg_dump` rewriting your security posture during a Supabase squash. The other five catch application-layer footguns that other Supabase security tools miss.
+
+The migration rules R04a, R06, R07, R08 and R09 replay your whole migration history in timestamp order and judge the state it leaves behind. A fix in a later migration clears the finding, and a later migration that undoes a lockdown raises one.
 
 ## Why supacheck exists
 
@@ -147,12 +151,21 @@ rules:
     # After 'supacheck baseline', set this to skip files at or before the
     # baseline so historical violations do not block CI.
     migrations_baseline_timestamp: "20260503210000"
+  R08:
+    # Schemas whose policies must name their roles.
+    schemas: [public]
+  R09:
+    # SECURITY DEFINER functions that are meant to be callable without a session.
+    allow_anon: []
 
 baseline_file: .supacheck-baseline.json
 
 # Findings present in the baseline are treated as known; only NEW findings
 # cause a non-zero exit. This is non-negotiable for first-day adoption on a
 # real codebase.
+
+# Minimum severity that causes a non-zero exit: critical, high, medium or low.
+# Findings below it are still printed.
 fail_on: high
 ```
 
@@ -169,7 +182,13 @@ supacheck ships as a small monorepo of focused packages:
 
 ## Status
 
-**Pre-release.** The 7 rules are implemented and tested (~145 unit tests, plus a smoke test against a real production codebase). The CLI runs locally. Not yet published to npm.
+**Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). Not yet published to npm, so `npx supacheck` and the GitHub Action above do not work yet. Until then, run it from a clone:
+
+```bash
+git clone https://github.com/ameliavibe/supacheck && cd supacheck && pnpm install
+cd /path/to/your/project
+/path/to/supacheck/packages/cli/node_modules/.bin/tsx /path/to/supacheck/packages/cli/src/index.ts scan
+```
 
 v0.1 ships to npm with the squash-clobbers blog post. Star the repo or watch [Releases](https://github.com/ameliavibe/supacheck/releases) to get the launch ping.
 
@@ -183,7 +202,7 @@ Rules are TypeScript files in `packages/rules/src/rules/` with fixtures in `pack
 4. Register in `packages/cli/src/registry.ts` and `packages/rules/src/index.ts`.
 5. Run `pnpm test` and `pnpm typecheck`.
 
-The squash-clobber family (R04a, R04b, R06, R07) sets `squashClobberFamily: true` on the Rule interface so docs and marketing can fan out from a single flag.
+The squash-clobber family (R04a, R04b, R06, R07, R09) sets `squashClobberFamily: true` on the Rule interface so docs and marketing can fan out from a single flag.
 
 ## License
 

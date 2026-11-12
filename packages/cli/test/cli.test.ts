@@ -183,3 +183,84 @@ describe('CLI: fix command', () => {
     );
   });
 });
+
+const OPEN_POLICY = `CREATE POLICY "p" ON public.t FOR SELECT USING (true);
+`;
+
+describe('CLI: fail_on', () => {
+  const scan = (cwd: string, format = 'json') =>
+    runScan({ cwd, configPath: null, format, noBaseline: true, toolVersion: '0.0.0' });
+
+  test('a high finding fails at the default threshold and passes at critical', () => {
+    const seed = { 'supabase/migrations/20260601000001_open.sql': OPEN_POLICY };
+    withTempProject(seed, (cwd) => {
+      const result = scan(cwd);
+      expect(result.findings.map((f) => f.ruleId)).toEqual(['R08']);
+      expect(result.exitCode).toBe(1);
+    });
+    withTempProject({ ...seed, '.supacheck.yml': 'version: 1\nfail_on: critical\n' }, (cwd) => {
+      const result = scan(cwd);
+      expect(result.newFindings).toHaveLength(1);
+      expect(result.exitCode).toBe(0);
+    });
+  });
+
+  test('a critical finding fails at every threshold', () => {
+    withTempProject(
+      {
+        'supabase/migrations/20260601000001_view.sql': 'CREATE VIEW public.v AS SELECT 1;\n',
+        '.supacheck.yml': 'version: 1\nfail_on: critical\n',
+      },
+      (cwd) => {
+        const result = scan(cwd);
+        expect(result.findings.map((f) => f.ruleId)).toEqual(['R06']);
+        expect(result.exitCode).toBe(1);
+      },
+    );
+  });
+});
+
+describe('CLI: SARIF output', () => {
+  test('carries the rule name and slug, and links to a page that exists', () => {
+    withTempProject({ 'supabase/migrations/20260601000001_open.sql': OPEN_POLICY }, (cwd) => {
+      const result = runScan({ cwd, configPath: null, format: 'sarif', noBaseline: true, toolVersion: '0.0.0' });
+      const run = JSON.parse(result.output).runs[0];
+      expect(run.tool.driver.rules).toEqual([
+        {
+          id: 'R08',
+          name: 'sql-policy-explicit-roles',
+          shortDescription: { text: 'RLS policy without an explicit role list' },
+          helpUri: 'https://github.com/ameliavibe/supacheck#what-it-catches',
+        },
+      ]);
+      expect(run.results[0].level).toBe('error');
+    });
+  });
+});
+
+describe('CLI: rule options from config', () => {
+  test('R09 allow_anon and R08 schemas are read from .supacheck.yml', () => {
+    const sql = `CREATE FUNCTION public.ping() RETURNS void LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $$ select 1 $$;
+ALTER FUNCTION public.ping() OWNER TO postgres;
+REVOKE EXECUTE ON FUNCTION public.ping() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.ping() TO anon;
+CREATE POLICY "read" ON storage.objects FOR SELECT USING (true);
+`;
+    const file = 'supabase/migrations/20260601000001_a.sql';
+    const scan = (cwd: string) =>
+      runScan({ cwd, configPath: null, format: 'json', noBaseline: true, toolVersion: '0.0.0' });
+    withTempProject({ [file]: sql }, (cwd) => {
+      expect(scan(cwd).findings.map((f) => f.ruleId)).toEqual(['R09']);
+    });
+    withTempProject(
+      {
+        [file]: sql,
+        '.supacheck.yml':
+          'version: 1\nrules:\n  R08:\n    schemas: [public, storage]\n  R09:\n    allow_anon: [ping]\n',
+      },
+      (cwd) => {
+        expect(scan(cwd).findings.map((f) => f.ruleId)).toEqual(['R08']);
+      },
+    );
+  });
+});

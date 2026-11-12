@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { Finding, ScannedFile } from '@supacheck/rules';
+import type { Finding, RuleSeverity, ScannedFile } from '@supacheck/rules';
 import { runRules } from '@supacheck/rules';
 import { loadConfig } from '../config.js';
 import { buildRules } from '../registry.js';
@@ -26,6 +26,8 @@ export interface ScanResult {
   output: string;
   exitCode: number;
 }
+
+const SEVERITY_RANK: Record<RuleSeverity, number> = { low: 0, medium: 1, high: 2, critical: 3 };
 
 export function runScan(opts: ScanOptions): ScanResult {
   const config = loadConfig(opts.configPath, opts.cwd);
@@ -55,9 +57,14 @@ export function runScan(opts: ScanOptions): ScanResult {
   const formatName = isFormatName(opts.format) ? opts.format : 'pretty';
   // The scan output shows only new findings (the actionable ones). Known
   // baselined findings are reported separately on stderr at end-of-run.
-  const output = format(newFindings, formatName, opts.toolVersion);
+  const output = format(newFindings, formatName, opts.toolVersion, rules);
 
-  const exitCode = newFindings.length > 0 ? 1 : 0;
+  const severityById = new Map(rules.map((r) => [r.id, r.severity]));
+  const threshold = SEVERITY_RANK[config.fail_on] ?? SEVERITY_RANK.high;
+  const failing = newFindings.some(
+    (f) => SEVERITY_RANK[severityById.get(f.ruleId) ?? 'critical'] >= threshold,
+  );
+  const exitCode = failing ? 1 : 0;
 
   return { findings, newFindings, knownFindings, output, exitCode };
 }

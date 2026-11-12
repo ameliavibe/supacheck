@@ -1,4 +1,4 @@
-import type { Finding } from '@supacheck/rules';
+import type { Finding, Rule } from '@supacheck/rules';
 import { formatPretty } from './pretty.js';
 import { formatJson } from './json.js';
 import { formatGithubActions } from './github-actions.js';
@@ -14,15 +14,16 @@ export function format(
   findings: Finding[],
   name: FormatName,
   toolVersion: string,
+  rules: Rule[] = [],
 ): string {
   switch (name) {
     case 'pretty':
-      return formatPretty(findings);
+      return formatPretty(findings, rules);
     case 'json':
       return formatJson(findings);
     case 'github-actions':
       return formatGithubActions(findings);
     case 'sarif':
-      return formatSarif(findings, toolVersion);
+      return formatSarif(findings, toolVersion, rules);
   }
 }

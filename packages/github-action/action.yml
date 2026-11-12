@@ -34,32 +34,32 @@ runs:
     - name: Run supacheck
       shell: bash
       env:
-        SUPA_SHIELD_CONFIG: ${{ inputs.config }}
-        SUPA_SHIELD_FORMAT: ${{ inputs.format }}
-        SUPA_SHIELD_BASELINE: ${{ inputs.baseline }}
-        SUPA_SHIELD_SARIF: ${{ inputs.sarif-file }}
-        SUPA_SHIELD_VERSION: ${{ inputs.version }}
+        SUPACHECK_CONFIG: ${{ inputs.config }}
+        SUPACHECK_FORMAT: ${{ inputs.format }}
+        SUPACHECK_BASELINE: ${{ inputs.baseline }}
+        SUPACHECK_SARIF: ${{ inputs.sarif-file }}
+        SUPACHECK_VERSION: ${{ inputs.version }}
       run: |
         set -euo pipefail
-        ARGS=("scan" "--format=$SUPA_SHIELD_FORMAT")
-        if [ -n "$SUPA_SHIELD_CONFIG" ]; then
-          ARGS+=("--config=$SUPA_SHIELD_CONFIG")
+        ARGS=("scan" "--format=$SUPACHECK_FORMAT")
+        if [ -n "$SUPACHECK_CONFIG" ]; then
+          ARGS+=("--config=$SUPACHECK_CONFIG")
         fi
-        if [ "$SUPA_SHIELD_BASELINE" != "true" ]; then
+        if [ "$SUPACHECK_BASELINE" != "true" ]; then
           ARGS+=("--no-baseline")
         fi
-        echo "Running: npx -y supacheck@$SUPA_SHIELD_VERSION ${ARGS[*]}"
-        npx -y "supacheck@$SUPA_SHIELD_VERSION" "${ARGS[@]}"
+        echo "Running: npx -y supacheck@$SUPACHECK_VERSION ${ARGS[*]}"
+        npx -y "supacheck@$SUPACHECK_VERSION" "${ARGS[@]}"
 
     - name: Emit SARIF report
       if: ${{ inputs.sarif-file != '' }}
       shell: bash
       env:
-        SUPA_SHIELD_SARIF: ${{ inputs.sarif-file }}
-        SUPA_SHIELD_VERSION: ${{ inputs.version }}
+        SUPACHECK_SARIF: ${{ inputs.sarif-file }}
+        SUPACHECK_VERSION: ${{ inputs.version }}
       run: |
         set -euo pipefail
         # Second invocation so the SARIF report reflects the same scan results
         # we just surfaced as PR annotations. Continue on error so a scan
         # failure does not block the SARIF upload step.
-        npx -y "supacheck@$SUPA_SHIELD_VERSION" scan --format=sarif --no-baseline > "$SUPA_SHIELD_SARIF" || true
+        npx -y "supacheck@$SUPACHECK_VERSION" scan --format=sarif --no-baseline > "$SUPACHECK_SARIF" || true
