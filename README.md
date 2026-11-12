@@ -182,7 +182,7 @@ supacheck is a small monorepo. Two packages are built for npm; the rest are used
 
 ## Status
 
-**Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). `npx supacheck` and the GitHub Action above need `supacheck` 0.1.0 on npm. If npm reports the package as not found, it has not been published yet; run it from a clone instead:
+**Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). `supacheck` and `@supacheck/safe-fetch` are on npm at 0.1.0, so `npx supacheck scan` works. To run it from a clone instead:
 
 ```bash
 git clone https://github.com/ameliavibe/supacheck && cd supacheck
