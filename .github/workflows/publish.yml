@@ -1,0 +1,51 @@
+name: publish
+
+# Stages one package on npm from this repository (trusted publishing, no token).
+# A staged version is not public until a maintainer approves it on npmjs.com.
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish at the version in its package.json
+        required: true
+        type: choice
+        options:
+          - cli
+          - safe-fetch
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      # `npm stage` needs npm 11.15 or later.
+      - run: npm install -g npm@latest && npm --version
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      # pnpm pack applies publishConfig and runs prepack (build, licence files);
+      # npm uploads the resulting tarball with the workflow's OIDC identity.
+      - name: pack
+        working-directory: packages/${{ inputs.package }}
+        run: pnpm pack && ls -l *.tgz
+
+      - name: stage on npm
+        working-directory: packages/${{ inputs.package }}
+        run: npm stage publish ./*.tgz --access public

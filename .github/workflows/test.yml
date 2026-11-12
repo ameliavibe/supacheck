@@ -18,6 +18,18 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      # The repository is public, so a commit must not carry a personal address.
+      - name: commit uses a noreply address
+        if: github.event_name == 'push'
+        run: |
+          emails=$(git log -1 --format='%ae %ce')
+          for email in $emails; do
+            case "$email" in
+              *@users.noreply.github.com|noreply@github.com) ;;
+              *) echo "::error::HEAD carries a non-noreply address; set git user.email to your GitHub noreply address"; exit 1 ;;
+            esac
+          done
+
       - run: pnpm install
 
       - name: typecheck
