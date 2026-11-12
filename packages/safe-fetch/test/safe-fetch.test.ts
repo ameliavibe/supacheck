@@ -104,7 +104,8 @@ describe('safeFetch: method and body across redirects', () => {
   test.each([301, 302, 303])('%i switches to GET and drops the body and its headers', async (status) => {
     const seen = stubFetch([redirect(status, `${A}/next`), ok()]);
     await safeFetch(`${A}/start`, post);
-    expect(seen[1]).toMatchObject({ method: 'GET', hasBody: false, headers: {} });
+    expect(seen[1]).toMatchObject({ method: 'GET', hasBody: false });
+    expect(seen[1]!.headers).toEqual({});
   });
 
   test.each([307, 308])('%i keeps the method, the body and its headers', async (status) => {
