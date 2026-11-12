@@ -52,6 +52,8 @@ export const DEFAULT_CONFIG: SupacheckConfig = {
     R05: { enabled: true, allowlist: [] },
     R06: { enabled: true },
     R07: { enabled: true },
+    R08: { enabled: true, schemas: ['public'] },
+    R09: { enabled: true, allow_anon: [] },
   },
   baseline_file: '.supacheck-baseline.json',
   fail_on: 'high',
@@ -110,6 +112,7 @@ exclude:
 baseline_file: .supacheck-baseline.json
 
 # Minimum severity that causes a non-zero exit. One of: critical, high, medium, low.
+# Findings below it are still printed.
 fail_on: high
 
 # Per-rule configuration. Set enabled: false to disable a rule entirely.
@@ -136,7 +139,8 @@ rules:
     # 'supacheck baseline' captures historical violations.
     # migrations_baseline_timestamp: "20260503210000"
 
-  # R04a: SECURITY DEFINER hygiene (search_path attr, OWNER, REVOKE).
+  # R04a: SECURITY DEFINER hygiene (search_path attr with pg_temp, OWNER,
+  # REVOKE), judged on the state every migration leaves behind.
   R04a:
     enabled: true
 
@@ -158,6 +162,19 @@ rules:
   # by pg_dump on the next squash). Squash-clobber defense.
   R07:
     enabled: true
+
+  # R08: RLS policy with no TO clause (or TO public). It applies to anon.
+  R08:
+    enabled: true
+    # Schemas whose policies must name their roles.
+    schemas:
+      - public
+
+  # R09: SECURITY DEFINER function that anon can still execute.
+  R09:
+    enabled: true
+    # Functions that are meant to be callable without a session.
+    allow_anon: []
 `;
 
 export function sampleConfig(): string {

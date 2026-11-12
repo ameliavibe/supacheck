@@ -8,3 +8,5 @@ export { createR04b, R04b } from './rules/R04b-sql-policy-service-role-to.js';
 export { createR05, R05 } from './rules/R05-ts-bare-fetch-no-helper.js';
 export { createR06, R06 } from './rules/R06-sql-view-security-invoker.js';
 export { createR07, R07 } from './rules/R07-sql-secdef-role-by-role-revoke.js';
+export { createR08, R08 } from './rules/R08-sql-policy-explicit-roles.js';
+export { createR09, R09 } from './rules/R09-sql-secdef-anon-execute.js';

@@ -22,7 +22,7 @@ export function lineAndColumn(src: string, offset: number): { line: number; colu
   return { line, column };
 }
 
-function basename(path: string): string {
+export function basename(path: string): string {
   const slash = path.lastIndexOf('/');
   return slash === -1 ? path : path.slice(slash + 1);
 }
@@ -39,4 +39,18 @@ export function isMigrationInScope(
   if (!match) return false;
   if (!baseline) return true;
   return match[1]! > baseline;
+}
+
+/**
+ * Timestamped migration files in apply order. Sorted by basename, so the
+ * order holds when files are labelled with different directory prefixes.
+ */
+export function sortMigrations<T extends { path: string }>(files: T[]): T[] {
+  return files
+    .filter((f) => isMigrationInScope(f.path, undefined))
+    .sort((a, b) => {
+      const an = basename(a.path);
+      const bn = basename(b.path);
+      return an < bn ? -1 : an > bn ? 1 : a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+    });
 }

@@ -8,6 +8,8 @@ import {
   createR05,
   createR06,
   createR07,
+  createR08,
+  createR09,
 } from '@supacheck/rules';
 import type { SupacheckConfig } from './config.js';
 
@@ -86,6 +88,26 @@ export function buildRules(config: SupacheckConfig): Rule[] {
       createR07({
         migrationsBaselineTimestamp:
           (config.rules.R07?.migrations_baseline_timestamp as string | undefined) ?? undefined,
+      }),
+    );
+  }
+
+  if (config.rules.R08?.enabled !== false) {
+    rules.push(
+      createR08({
+        migrationsBaselineTimestamp:
+          (config.rules.R08?.migrations_baseline_timestamp as string | undefined) ?? undefined,
+        schemas: (config.rules.R08?.schemas as string[] | undefined) ?? ['public'],
+      }),
+    );
+  }
+
+  if (config.rules.R09?.enabled !== false) {
+    rules.push(
+      createR09({
+        migrationsBaselineTimestamp:
+          (config.rules.R09?.migrations_baseline_timestamp as string | undefined) ?? undefined,
+        allowAnon: (config.rules.R09?.allow_anon as string[] | undefined) ?? [],
       }),
     );
   }

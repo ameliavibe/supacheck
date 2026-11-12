@@ -14,6 +14,11 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { describe, expect, test } from 'vitest';
 import { createR03 } from '../src/rules/R03-sql-bare-auth-uid.js';
+import { createR04a } from '../src/rules/R04a-sql-secdef-hygiene.js';
+import { createR07 } from '../src/rules/R07-sql-secdef-role-by-role-revoke.js';
+import { R08, replayPolicies } from '../src/rules/R08-sql-policy-explicit-roles.js';
+import { createR09 } from '../src/rules/R09-sql-secdef-anon-execute.js';
+import { replaySecdefState } from '../src/lib/secdef-state.js';
 
 const AMELIA_REPO = process.env.AMELIA_REPO ?? join(homedir(), 'Amelia');
 const MIGRATIONS_DIR = join(AMELIA_REPO, 'supabase', 'migrations');
@@ -65,5 +70,40 @@ describe.skipIf(!ameliaAvailable)('R03 vs. real Amelia migrations', () => {
     const findings = rule.scan(synthetic);
     expect(findings).toHaveLength(1);
     expect(findings[0]!.ruleId).toBe('R03');
+  });
+});
+
+/**
+ * The replay rules against a real pg_dump baseline plus hand-written
+ * migrations. Amelia's own gates (check-policy-roles, check-migration-secdef)
+ * enforce the same properties, so a faithful port reports nothing.
+ */
+describe.skipIf(!ameliaAvailable)('replay rules vs. real Amelia migrations', () => {
+  const files = ameliaAvailable
+    ? readdirSync(MIGRATIONS_DIR)
+        .filter((f) => f.endsWith('.sql'))
+        .map((f) => ({
+          path: `supabase/migrations/${f}`,
+          contents: readFileSync(join(MIGRATIONS_DIR, f), 'utf8'),
+        }))
+    : [];
+  // Amelia's current squash baseline is the oldest file in the directory.
+  const squash = files.map((f) => f.path.split('/').pop()!.slice(0, 14)).sort()[0];
+
+  test('every CREATE FUNCTION in the corpus is parsed', () => {
+    const replay = replaySecdefState(files);
+    expect(replay.unparsed).toEqual([]);
+    expect(replay.functions.filter((f) => f.securityDefiner).length).toBeGreaterThan(10);
+  });
+
+  test('R08 reads the policies and finds every public one role-scoped', () => {
+    expect(replayPolicies(files).filter((p) => p.schema === 'public').length).toBeGreaterThan(50);
+    expect(R08.scanAll!(files)).toEqual([]);
+  });
+
+  test('R04a, R07 and R09 report nothing after the squash baseline', () => {
+    const opts = { migrationsBaselineTimestamp: squash };
+    const findings = [createR04a(opts), createR07(opts), createR09(opts)].flatMap((r) => r.scanAll!(files));
+    expect(findings.map((f) => `${f.ruleId} ${f.file}:${f.line}`)).toEqual([]);
   });
 });
