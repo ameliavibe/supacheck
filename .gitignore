@@ -13,3 +13,10 @@ coverage/
 
 # Test artifacts
 .vitest-cache/
+
+# Copied in by prepack, removed by postpack
+packages/cli/README.md
+packages/cli/LICENSE
+packages/cli/NOTICE
+packages/safe-fetch/LICENSE
+packages/safe-fetch/NOTICE

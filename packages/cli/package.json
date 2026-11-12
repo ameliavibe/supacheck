@@ -1,31 +1,54 @@
 {
   "name": "supacheck",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "description": "Static analysis for Supabase + Next.js apps. Runs on every PR.",
+  "keywords": [
+    "supabase",
+    "nextjs",
+    "security",
+    "linter",
+    "static-analysis",
+    "rls",
+    "postgres"
+  ],
+  "license": "Apache-2.0",
+  "author": "Amelia Vibe, LLC",
+  "homepage": "https://github.com/ameliavibe/supacheck#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ameliavibe/supacheck.git",
+    "directory": "packages/cli"
+  },
+  "bugs": "https://github.com/ameliavibe/supacheck/issues",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "bin": {
     "supacheck": "./dist/index.js"
   },
-  "main": "./dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "NOTICE"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "dev": "tsx src/index.ts"
+    "build": "node build.mjs",
+    "dev": "tsx src/index.ts",
+    "prepack": "pnpm run build && node ../../scripts/pack-files.mjs README.md LICENSE NOTICE",
+    "postpack": "node ../../scripts/pack-files.mjs --clean README.md LICENSE NOTICE"
   },
   "dependencies": {
-    "@supacheck/rules": "workspace:*",
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.2",
     "yaml": "^2.6.1"
   },
   "devDependencies": {
+    "@supacheck/rules": "workspace:*",
     "@types/picomatch": "^3.0.2",
+    "esbuild": "^0.27.7",
     "tsx": "^4.19.2",
     "vitest": "^2.1.8"
   }

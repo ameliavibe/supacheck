@@ -171,18 +171,18 @@ fail_on: high
 
 ## Packages
 
-supacheck ships as a small monorepo of focused packages:
+supacheck is a small monorepo. Two packages are built for npm; the rest are used straight from this repo:
 
-| Package | Description |
-|---------|-------------|
-| `supacheck` | The CLI |
-| `@supacheck/safe-fetch` | Reference SSRF-safe drop-in replacement for `fetch()`. The library R05 enforces use of. |
-| `@supacheck/semgrep-rules` | Subset of rules as Semgrep YAML for users who already run Semgrep |
-| `@supacheck/github-action` | GitHub Action wrapper around the CLI. Emits PR annotations and optional SARIF. |
+| Package | Where | Description |
+|---------|-------|-------------|
+| `supacheck` | npm | The CLI, with the rules bundled in |
+| `@supacheck/safe-fetch` | npm | Reference SSRF-safe drop-in replacement for `fetch()`. The library R05 enforces use of. |
+| `packages/semgrep-rules` | this repo | Subset of rules as Semgrep YAML for users who already run Semgrep |
+| `packages/github-action` | this repo | GitHub Action wrapper around the CLI. Emits PR annotations and optional SARIF. |
 
 ## Status
 
-**Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). Not yet published to npm, so `npx supacheck` and the GitHub Action above do not work yet. Until then, run it from a clone:
+**Pre-release.** The 10 rules are implemented and tested (~230 unit tests, plus cross-checks against a real production codebase). `npx supacheck` and the GitHub Action above need `supacheck` 0.1.0 on npm. If npm reports the package as not found, it has not been published yet; run it from a clone instead:
 
 ```bash
 git clone https://github.com/ameliavibe/supacheck && cd supacheck
@@ -191,7 +191,7 @@ cd /path/to/your/project
 node /path/to/supacheck/packages/cli/dist/index.js scan
 ```
 
-v0.1 ships to npm with the squash-clobbers blog post. Star the repo or watch [Releases](https://github.com/ameliavibe/supacheck/releases) to get the launch ping.
+Star the repo or watch [Releases](https://github.com/ameliavibe/supacheck/releases) to hear about new versions.
 
 ## Contributing
 

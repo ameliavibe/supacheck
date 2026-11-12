@@ -1,23 +1,58 @@
 {
   "name": "@supacheck/safe-fetch",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "description": "SSRF-safe drop-in replacement for fetch(). Validates URLs against private/loopback/link-local ranges and re-validates every redirect hop.",
-  "main": "./src/index.ts",
+  "keywords": [
+    "ssrf",
+    "fetch",
+    "security",
+    "supabase",
+    "nextjs"
+  ],
+  "license": "Apache-2.0",
+  "author": "Amelia Vibe, LLC",
+  "homepage": "https://github.com/ameliavibe/supacheck#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ameliavibe/supacheck.git",
+    "directory": "packages/safe-fetch"
+  },
+  "bugs": "https://github.com/ameliavibe/supacheck/issues",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "./dist/index.js",
   "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
+    "access": "public",
     "main": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.map",
+    "NOTICE"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "prepack": "pnpm run build && node ../../scripts/pack-files.mjs LICENSE NOTICE",
+    "postpack": "node ../../scripts/pack-files.mjs --clean LICENSE NOTICE"
   },
   "dependencies": {
     "ipaddr.js": "^2.2.0"
