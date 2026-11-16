@@ -13,6 +13,8 @@ supacheck is a deterministic linter for Supabase + Next.js projects. It is a pnp
 
 pnpm only; never npm, npx or yarn for installs or scripts.
 
+Verify: `pnpm typecheck && pnpm test`
+
 ```bash
 pnpm install
 pnpm typecheck
